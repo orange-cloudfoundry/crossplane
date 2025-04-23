@@ -310,10 +310,6 @@ func SetupProviderRevision(mgr ctrl.Manager, o controller.Options) error {
 	cb := ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		For(&v1.ProviderRevision{}).
-		Owns(&appsv1.Deployment{}).
-		Owns(&corev1.Service{}).
-		Owns(&corev1.Secret{}).
-		Owns(&corev1.ServiceAccount{}).
 		Watches(&v1alpha1.ControllerConfig{}, &EnqueueRequestForReferencingProviderRevisions{
 			client: mgr.GetClient(),
 		}).
@@ -333,6 +329,13 @@ func SetupProviderRevision(mgr ctrl.Manager, o controller.Options) error {
 		WithNamespace(o.Namespace),
 		WithServiceAccount(o.ServiceAccount),
 		WithFeatureFlags(o.Features),
+	}
+
+	if !o.NamespaceRestricted {
+		cb = cb.Owns(&appsv1.Deployment{}).
+			Owns(&corev1.Service{}).
+			Owns(&corev1.Secret{}).
+			Owns(&corev1.ServiceAccount{})
 	}
 
 	if o.PackageRuntime == controller.PackageRuntimeDeployment {
@@ -424,10 +427,6 @@ func SetupFunctionRevision(mgr ctrl.Manager, o controller.Options) error {
 	cb := ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		For(&v1.FunctionRevision{}).
-		Owns(&appsv1.Deployment{}).
-		Owns(&corev1.Service{}).
-		Owns(&corev1.Secret{}).
-		Owns(&corev1.ServiceAccount{}).
 		Watches(&v1alpha1.ControllerConfig{}, &EnqueueRequestForReferencingFunctionRevisions{
 			client: mgr.GetClient(),
 		}).
@@ -447,6 +446,13 @@ func SetupFunctionRevision(mgr ctrl.Manager, o controller.Options) error {
 		WithNamespace(o.Namespace),
 		WithServiceAccount(o.ServiceAccount),
 		WithFeatureFlags(o.Features),
+	}
+
+	if !o.NamespaceRestricted {
+		cb = cb.Owns(&appsv1.Deployment{}).
+			Owns(&corev1.Service{}).
+			Owns(&corev1.Secret{}).
+			Owns(&corev1.ServiceAccount{})
 	}
 
 	if o.PackageRuntime == controller.PackageRuntimeDeployment {
